@@ -18,11 +18,14 @@ const favoriteBlog = (blogs) => {
     blogs.forEach(element => {
         if(element.likes > likeCount){
             likeCount = element.likes
-            result = {title: element.title}
+            result = {
+                title: element.title,
+                author: element.author,
+                likes: element.likes
+            }
         }
     })
-    console.log(likeCount)
-    console.log(result)
+    
     return result
 }
 
