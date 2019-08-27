@@ -10,20 +10,19 @@ test('notes are returned as json', async () => {
         .expect(200)
         .expect('Content-Type', /application\/json/)
     
-    
 }) 
 
-/* test('there are five notes', async () => {
-    const response = await api.get('/api/testNotes')
+test('there are five notes', async () => {
+    const response = await api.get('/api/blogs')
   
     expect(response.body.length).toBe(1)
-}) */
+}) 
   
-//test('the first note is about HTTP methods', async () => {
-//    const response = await api.get('/api/notes')
-//  
-//    expect(response.body[0].content).toBe('HTML is easy')
-//})
+test('the first note is about HTTP methods', async () => {
+    const response = await api.get('/api/blogs')
+  
+    expect(response.body[0].title).toBe('ms')
+})
 
 
 afterAll(() => {
