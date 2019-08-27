@@ -6,8 +6,8 @@ const api = supertest(app)
 
 test('notes are returned as json', async (done) => {
     await api   
-        .get('/api/testNotes')
-        .expect(404)
+        .get('/api/blogs')
+        .expect(200)
         .expect('Content-Type', /application\/json/)
     done()
     

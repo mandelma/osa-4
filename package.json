@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "test": "cross-env NODE_ENV=test jest --verbose --runInBand"
   },
+  "proxy": "http://localhost:3003",
   "author": "Marko",
   "license": "ISC",
   "dependencies": {
