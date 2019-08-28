@@ -7,15 +7,19 @@ const blogsRouter = require('./controllers/blogs')
 const middleware = require('./utils/middleware')
 const mongoose = require('mongoose')
 
-console.log('connecting to', config.MONGO_URL)
+const logger = require('./utils/logger')
+
+
+
+logger.info('connecting to', config.MONGO_URL)
 
 mongoose.connect(config.MONGO_URL, {useNewUrlParser: true})
-.then(() => {
-    console.log('connected to Mongo DB')
-})
-.catch((errror) => {
-    console.log('error connected to Mongo DB')
-})
+    .then(() => {
+        logger.info('connected to Mongo DB')
+    })
+    .catch((error) => {
+        logger.error('error connected to Mongo DB', error.message)
+    })
 
 app.use(cors())
 app.use(express.static('build'))
