@@ -110,7 +110,7 @@ describe('If contents are missing from blog', () => {
 })
 
 
-describe('Delete blog', () => {
+describe('Delete blog and update blog', () => {
     beforeEach(async () => {
         await  Blog.deleteMany({})
     
@@ -133,6 +133,20 @@ describe('Delete blog', () => {
         const blogsAfter = await helper.inDb()
     
         expect(blogsAfter.length).toBe(helper.initialBlogs.length - 1)
+    })
+
+    test('Update blog likes and response statuscode 200', async () => {
+        const blogsFirst = await helper.inDb()
+        const updateBlog = blogsFirst[1]
+
+        await apis
+            .put('/api/blogs/' + updateBlog.id)
+            .expect(200)
+
+        const blogsAfterUpdate = await helper.inDb()
+        const  updatedBlog= blogsAfterUpdate[1]
+        console.log("Likes on: ", updatedBlog)
+        expect(updatedBlog.likes).toBe(updateBlog.likes + 1)
     })
 })
 
