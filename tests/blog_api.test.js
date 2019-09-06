@@ -184,7 +184,7 @@ describe('When there is initially one user at db', () => {
     }) 
  
 
-    test('creation fails with proper statuscode and message if username already taken', async () => {
+     test('creation fails with proper statuscode and message if username already taken', async () => {
         const usersAtStart = await helper.usersInDb()
         
         const newUser = {
@@ -204,7 +204,45 @@ describe('When there is initially one user at db', () => {
         const usersAtEnd = await helper.usersInDb()
         expect(usersAtEnd.length).toBe(usersAtStart.length) 
     })
+
+    test('creation failed with proper statuscode if username length is less than 3', async () => {
+        const usersAtStart = await helper.usersInDb()
+
+        const newUser = {
+            username: "ha",
+            name: "Hanna",
+            password: "secret"
+        }
+
+        await apis
+            .post('/api/users')
+            .send(newUser)
+            .expect(400)
+
+        const usersAtEnd = await helper.usersInDb()
+
+        expect(usersAtStart.length).toBe(usersAtEnd.length)
+    })
+ 
+    test('creation failed with statuscode 400 if password length is less than 3 characters', async () => {
+        const usersAtStart = await helper.usersInDb()
+
+        const newUser = {
+            username: "HannaHa",
+            name: "Hanna",
+            password: "sa"
+        }
+
+        await apis
+            .post('/api/users')
+            .send(newUser)
+            expect(400)
+
+        const usersAtEnd = await helper.usersInDb()
+        expect(usersAtStart.length).toBe(usersAtEnd.length)
+    })
 })
+
 
 afterAll(() => {
     mongoose.connection.close()
