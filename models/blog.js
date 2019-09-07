@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 
 mongoose.set('useFindAndModify', false)
+mongoose.set('useCreateIndex', true)
 
 const noteSchema = new mongoose.Schema({
     title: {
