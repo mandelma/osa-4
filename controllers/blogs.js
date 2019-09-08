@@ -2,6 +2,7 @@ const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
 
 const User = require('../models/users')
+const jwt = require('jsonwebtoken')
 
 blogsRouter.get('/', async (request, response) => {
     const blogs = await Blog.find({}).populate('user', {username: 1, name: 1})
@@ -19,53 +20,44 @@ blogsRouter.get('/:id', async (request, response, next) => {
   }catch(exception){
     next(exception)
   }
-    /* Blog.findById(request.params.id)
-        .then(data => {
-            if (data) {
-                response.json(data.toJSON())
-            } else {
-                response.status(404).end()
-            }
-        })
-        .catch(error => next(error)) */
 })
 
 blogsRouter.post('/', async (request, response, next) => {
     const body = request.body
+    
+    try{
+      const decodedToken = jwt.verify(request.token, process.env.SECRET)
 
-    const user = await User.findById(body.userId)
+      if(!request.token || !decodedToken.id){
+        return resoponse.status(401).json({error: 'token missing or invalid'})
+      }
 
-    const blogi = new Blog({
-    title: body.title,
-    author: body.author,
-    url: body.url,
-    likes: body.likes,
-    user: user._id
-  })
+      const user = await User.findById(decodedToken.id)
 
-  if(!('title' in body)){
-    response.status(400)
-  }
+      const blogi = new Blog({
+        title: body.title,
+        author: body.author,
+        url: body.url,
+        likes: body.likes,
+        user: user._id
+      })
+  
+        if(!('title' in body)){
+          response.status(400)
+        }
+  
+        if(!('url' in body)){
+          response.status(400)
+        }   
+  
+        const savedBlog = await blogi.save()
+        user.blogs = user.blogs.concat(savedBlog._id)
+        await user.save()
+        response.json(savedBlog.toJSON())
+    }catch(exception){
+      next(exception)
+    }
 
-  if(!('url' in body)){
-    response.status(400)
-  }   
-
-  try{
-    const savedBlog = await blogi.save()
-    user.blogs = user.blogs.concat(savedBlog._id)
-    await user.save()
-    response.json(savedBlog.toJSON())
-  }catch(exception){
-  next(exception)
-  }
-
-  /* blogi.save()
-    .then(savedNote => {
-      response.json(savedNote.toJSON())
-      
-    })
-    .catch(error => next(error)) */
 })
 
 blogsRouter.delete('/:id', async (request, response, next) => {
@@ -75,12 +67,6 @@ blogsRouter.delete('/:id', async (request, response, next) => {
   }catch(exception){
     next(exception)
   }
-
-  /* Blog.findByIdAndRemove(request.params.id)
-    .then(() => {
-      response.status(204).end()
-    })
-    .catch(error => next(error)) */
 })
 
 blogsRouter.put('/:id', async (request, response, next) => {
@@ -103,20 +89,6 @@ blogsRouter.put('/:id', async (request, response, next) => {
   }catch(exception){
     next(exception)
   }
-  /* const body = request.body
-
-  const blogi = {
-    title: body.title,
-    author: body.author,
-    url: body.url,
-    likes: body.likes
-  }
-
-  Blog.findByIdAndUpdate(request.params.id, blogi, { new: true })
-    .then(updatedNote => {
-      response.json(updatedNote.toJSON())
-    })
-    .catch(error => next(error)) */
 })
 
 module.exports = blogsRouter

@@ -20,7 +20,7 @@ usersRouter.post('/', async (request, response, next) => {
         if(body.password === undefined){
             console.log("Error: password field should not to be empty!")
             return response.status(400).json({Error: "Password field should not to be empty!"}).end()
-        }
+        } 
 
         const saltRounds = 10
         const passwordHash = await bcrypt.hash(body.password, saltRounds)
