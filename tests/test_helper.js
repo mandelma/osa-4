@@ -15,6 +15,14 @@ const initialBlogs = [
     }
 ]
 
+const blogForDelete = {
+    title: "Delete this blog",
+    author: "Testaaja",
+    url: "/",
+    likes: 11
+}
+
+
 const inDb = async () => {
     const blogs = await Blog.find({})
     return blogs.map(note => note.toJSON())
@@ -26,8 +34,10 @@ const usersInDb = async () => {
     return users.map(u => u.toJSON())
 }
 
+
 module.exports = {
     initialBlogs,
     inDb,
+    blogForDelete,
     usersInDb
 }
