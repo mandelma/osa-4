@@ -7,7 +7,8 @@
     "start": "cross-env NODE_ENV=production node index.js",
     "look": "cross-env NODE_ENV=development nodemon index.js",
     "lint": "eslint .",
-    "test": "cross-env NODE_ENV=test jest --verbose --runInBand"
+    "test": "cross-env NODE_ENV=test jest --verbose --runInBand",
+    "build:ui": "rmdir /q /s build && cd C:/Users/majaa/omnia/osa-5/ && npm run build --prod && xcopy build ..\\osa-4\\build\\ /E /H /C /R /Q /Y"
   },
   "proxy": "http://localhost:3003",
   "author": "Marko",

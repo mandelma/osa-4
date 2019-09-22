@@ -1,18 +1,18 @@
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
-const helper = require('./test_helper')
+const helper = require('./user_helper')
 const apis = supertest(app)
 const Blog = require('../models/blog')
 const User = require('../models/users')
-const userHelper = require('./user_helper')
 
 describe('When there is initially one user at db', () => {
     beforeEach(async () => {
         await User.deleteMany({})
         const user = new User({
-            username: 'root',
-            password: 'sekret'
+            username: helper.initialUsers[0].username,
+            name: helper.initialUsers[0].name,
+            password: helper.initialUsers[0].password
         })
         await user.save()
     })

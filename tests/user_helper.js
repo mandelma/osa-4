@@ -3,7 +3,7 @@ const User = require('../models/users')
 const initialUsers = [
     {
         username: "root",
-        name: "Testija",
+        name: "Testaaja",
         password: "test"
     },
     {
@@ -13,6 +13,11 @@ const initialUsers = [
     }
 ]
 
+const loginInfo = {
+    username: "root",
+    password: "test"
+}
+
 const usersInDb = async () => {
     const users = await User.find({})
     return users.map(note => note.toJSON())
@@ -21,5 +26,6 @@ const usersInDb = async () => {
 
 module.exports = {
     initialUsers,
+    loginInfo,
     usersInDb
 }

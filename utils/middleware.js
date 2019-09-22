@@ -14,11 +14,11 @@ const unknownEndpoint = (request, response) => {
 
 const getTokenFrom = (request, response, next) => {
     const authorization = request.get('authorization')
-    if(authorization && authorization.toLowerCase().startsWith('bearer')) {
-        request.token = authorization.substring(7)
+    if(authorization && authorization.toLowerCase().startsWith('bearer')){
+      request.token = authorization.substring(7)
     }
     next()
-}
+  }
 
 const errorHandler = (error, request, response, next) => {
     logger.error(error.message)
@@ -35,15 +35,12 @@ const errorHandler = (error, request, response, next) => {
             error: 'invalid token'
         })
     }
-    logger.error(error.message)
     next(error)
 }
-
-
 
 module.exports = {
     requestLogger,
     unknownEndpoint,
-    errorHandler,
-    getTokenFrom
+    getTokenFrom,
+    errorHandler
 }

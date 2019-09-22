@@ -8,14 +8,13 @@ const User = require('../models/users')
 
 beforeEach(async () => {
     await  Blog.deleteMany({})
-
+    
     let blogObject = new Blog(helper.initialBlogs[0])
     await blogObject.save()
 
     blogObject = new Blog(helper.initialBlogs[1])
     await blogObject.save()
 })
-
 
 describe('Blogs are returned as correct formatted', () => {  
      test('notes are returned as json', async () => {
@@ -25,13 +24,17 @@ describe('Blogs are returned as correct formatted', () => {
             .expect('Content-Type', /application\/json/)
     })    
     
+    
     test('id field is id, not _id', async () => {
         const response =  await apis.get('/api/blogs')
+    
         expect(response.body[0].id).toBeDefined()
+        
     })
 
     test('all blogs are returned', async () => {
         const response = await apis.get('/api/blogs')
+      
         expect(response.body.length).toBe(helper.initialBlogs.length)
     })  
 })
@@ -76,6 +79,7 @@ describe('Blogs can be added and empty likes count is zero', () => {
         expect(blogsInDb.length).toBe(helper.initialBlogs.length + 1)
     })
     
+
     test('If no likes, likes count is zero', async () => {
         await User.deleteMany({})
          const user = { username: 'testaaja', password: 'salasana'}
@@ -187,8 +191,31 @@ describe('If contents are missing from blog', () => {
 
 
 describe('Delete blog and update blog', () => {
+    beforeEach(async () => {
+        await  Blog.deleteMany({})
+    
+        let blogObject = new Blog(helper.initialBlogs[0])
+        await blogObject.save()
+    
+        blogObject = new Blog(helper.initialBlogs[1])
+        await blogObject.save()
+    })
+
 
     test('Delete blog and response statuscode 204', async () => {
+        const firstBlog = await helper.inDb()
+        const deletedBlog = firstBlog[0]
+    
+        await apis
+            .delete('/api/blogs/' + deletedBlog.id)
+            .expect(204)
+    
+        const blogsAfter = await helper.inDb()
+    
+        expect(blogsAfter.length).toBe(helper.initialBlogs.length - 1)
+    })
+
+    test('Update blog likes and response statuscode 200', async () => {
         await User.deleteMany({})
         const user = { username: 'testaaja', password: 'salasana'}
         await apis
@@ -208,39 +235,36 @@ describe('Delete blog and update blog', () => {
 
         const token = login.body.token
 
+        const upBlog = {
+            title: "Blog for update",
+            author: "Hanna",
+            url: 'www.uusiUrl.com',
+            likes: 70,
+        }
+    
         await apis
             .post('/api/blogs')
             .set('Authorization', `bearer ${token}`)
-            .send(helper.blogForDelete)
+            .send(upBlog)
             .expect(200)
 
-        const blogsAfter = await helper.inDb()
-        
-        expect(blogsAfter.length).toBe(helper.initialBlogs.length + 1)
-        
-        const deleteThisBlog = blogsAfter.find(blog => blog.title === helper.blogForDelete.title)
-        await apis
-            
-            .delete('/api/blogs/' + deleteThisBlog.id)
-            .set('Authorization', `bearer ${token}`)
-            .expect(204)
-    
-        const blogsAfterDelete = await helper.inDb()
-    
-        expect(blogsAfterDelete.length).toBe(blogsAfter.length - 1)
-    })
-
-    test('Update blog likes and response statuscode 200', async () => {
         const blogsFirst = await helper.inDb()
-        const updateBlog = blogsFirst[1]
+        const updateBlog = blogsFirst[2]
 
+        const uusiBlogi = {
+            title: "Blog for update",
+            authoor: "Hanna",
+            url: "www.uusiUrl.com",
+            likes: upBlog.likes + 1
+        }
         await apis
-            .put('/api/blogs/' + updateBlog.id)
+            .put(`/api/blogs/${updateBlog.id}`)
+            .send(uusiBlogi)
             .expect(200)
 
         const blogsAfterUpdate = await helper.inDb()
-        const  updatedBlog= blogsAfterUpdate[1]
-        console.log("Likes on: ", updatedBlog)
+
+        const  updatedBlog= blogsAfterUpdate[2]
         expect(updatedBlog.likes).toBe(updateBlog.likes + 1)
     })
 })
